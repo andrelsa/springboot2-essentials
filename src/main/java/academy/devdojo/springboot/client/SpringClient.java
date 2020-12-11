@@ -3,8 +3,7 @@ package academy.devdojo.springboot.client;
 import academy.devdojo.springboot.domain.Anime;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -28,10 +27,28 @@ public class SpringClient {
         ResponseEntity<List<Anime>> exchange = new RestTemplate().exchange("http://localhost:8081/animes/all",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<>() {});
+                new ParameterizedTypeReference<>() {
+                });
         log.info("************EXCHANGE************");
         log.info(exchange.getBody());
 
+        /*Anime kingdom = Anime.builder().name("kingdom").build();
+        Anime kingdomSaved = new RestTemplate().postForObject("http://localhost:8081/animes/", kingdom, Anime.class);
+        log.info("************POST FOR OBJECT************");
+        log.info("Saved anime {}", kingdomSaved);*/
 
+        Anime samuraiChamploo = Anime.builder().name("Samurai Champloo").build();
+        ResponseEntity<Anime> samuraiChamplooSaved = new RestTemplate().exchange("http://localhost:8081/animes/",
+                HttpMethod.POST,
+                new HttpEntity<>(samuraiChamploo, createJsonHeader()),
+                Anime.class);
+        log.info("************POST FOR EXCHANGE************");
+        log.info("Saved anime {}", samuraiChamplooSaved);
+    }
+
+    private static HttpHeaders createJsonHeader() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return httpHeaders;
     }
 }
